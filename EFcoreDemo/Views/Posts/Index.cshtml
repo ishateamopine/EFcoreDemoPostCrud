@@ -1,0 +1,38 @@
+﻿@model IEnumerable<EFcoreDemo.Models.ViewModels.PostViewModel>
+
+@{
+    ViewData["Title"] = "All Posts";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Post</a>
+</p>
+
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Blog URL</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Content</td>
+                <td>@item.BlogId</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.PostId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.PostId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.PostId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

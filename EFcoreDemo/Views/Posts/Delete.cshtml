@@ -1,0 +1,17 @@
+﻿@model EFcoreDemo.Models.Post
+
+<h2>Delete Confirmation</h2>
+
+<h4>Are you sure you want to delete this post?</h4>
+
+<table class="table">
+    <tr><th>Title</th><td>@Model.Title</td></tr>
+    <tr><th>Content</th><td>@Model.Content</td></tr>
+    <tr><th>BlogId</th><td>@Model.BlogId</td></tr>
+</table>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="PostId" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

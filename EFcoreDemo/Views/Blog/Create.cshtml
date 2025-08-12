@@ -1,0 +1,58 @@
+﻿@model EFcoreDemo.Models.ViewModels.BlogViewModel
+@using EFcoreDemo.Models
+@inject Microsoft.Extensions.Options.IOptions<PositionOptions> Pos
+
+
+<h2>Position (in view)</h2>
+<p>Title: @Pos.Value.Title</p>
+<p>Name:  @Pos.Value.Name</p>
+<h2>Create Blog</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label>URL</label>
+        <input asp-for="Url" class="form-control" />
+        <span asp-validation-for="Url" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+@{
+    ViewData["Title"] = "Create Blog";
+}
+
+<h2>Create Blog</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label>Blog Type</label>
+        <select name="blogType" class="form-control" id="blogType">
+            <option value="Normal">Normal Blog</option>
+            <option value="RSS">RSS Blog</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Url</label>
+        <input type="text" name="url" class="form-control" />
+    </div>
+
+    <div class="form-group" id="rssField" style="display:none;">
+        <label>Rss Url</label>
+        <input type="text" name="rssUrl" class="form-control" />
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-success">Save</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById("blogType").addEventListener("change", function () {
+            if (this.value === "RSS") {
+                document.getElementById("rssField").style.display = "block";
+            } else {
+                document.getElementById("rssField").style.display = "none";
+            }
+        });
+    </script>
+}

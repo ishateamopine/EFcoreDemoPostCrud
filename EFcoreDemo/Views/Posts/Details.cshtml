@@ -1,0 +1,12 @@
+﻿@model EFcoreDemo.Models.ViewModels.PostViewModel
+
+<h2>Post Details</h2>
+
+<table class="table">
+    <tr><th>Title</th><td>@Model.Title</td></tr>
+    <tr><th>Content</th><td>@Model.Content</td></tr>
+    <tr><th>BlogId</th><td>@Model.BlogId</td></tr>
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.PostId" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back</a>

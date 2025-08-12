@@ -1,0 +1,10 @@
+﻿@model EFcoreDemo.Models.Blog
+
+<h2>Delete Blog</h2>
+
+<form asp-action="RemoveBlog" method="post">
+    <input type="hidden" asp-for="BlogId" />
+    <p>Are you sure you want to delete blog: <strong>@Model.Url</strong>?</p>
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

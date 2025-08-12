@@ -1,0 +1,13 @@
+﻿@model EFcoreDemo.Models.Blog
+
+<h2>Edit Blog</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="BlogId" />
+    <div class="form-group">
+        <label>URL</label>
+        <input asp-for="Url" class="form-control" />
+        <span asp-validation-for="Url" class="text-danger"></span>
+    </div>    
+    <button type="submit" class="btn btn-success">Update</button>
+</form>
