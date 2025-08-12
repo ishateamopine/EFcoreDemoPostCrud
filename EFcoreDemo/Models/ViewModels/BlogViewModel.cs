@@ -7,9 +7,10 @@ namespace EFcoreDemo.Models.ViewModels
         public int BlogId { get; set; }
         public string? Url { get; set; }
         public int PostCount { get; set; }
-        public string? RssUrl { get; set; } // Sirf RssBlog ke liye
+        public string? RssUrl { get; set; } 
         public List<PostViewModel> Posts { get; set; } = new();
     }
+    // Using Fluent Validation
     public class BlogViewModelValidator : AbstractValidator<BlogViewModel>
     {
         public BlogViewModelValidator()

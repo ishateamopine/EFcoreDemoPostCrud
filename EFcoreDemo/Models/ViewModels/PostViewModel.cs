@@ -10,6 +10,7 @@ namespace EFcoreDemo.Models.ViewModels
         public int BlogId { get; set; }
         public string? BlogUrl { get; set; }
     }
+    //Using Fluent Validation
     public class PostViewModelValidator : AbstractValidator<PostViewModel>
     {
         public PostViewModelValidator()

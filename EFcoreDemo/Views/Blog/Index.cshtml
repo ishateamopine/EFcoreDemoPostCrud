@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EFcoreDemo.Models.Blog>
+﻿@model IEnumerable<EFcoreDemo.Models.ViewModels.BlogViewModel>
 
 
 <h2>All Blogs</h2>
@@ -6,17 +6,17 @@
 <p>Title: @ViewBag.Title</p>
 <p>Name:  @ViewBag.Name</p>
 
-@foreach (var blog in Model)
+@foreach (var blogViewModel in Model)
 {
     <div class="mb-3 border p-2">
-        <h3>@blog.Url</h3>
+        <h3>@blogViewModel.Url</h3>
         <a class="btn btn-primary" asp-action="Create">Create Blog</a>
-        <a asp-action="Edit" asp-route-id="@blog.BlogId" class="btn btn-warning mb-2">Edit</a>
-        <a asp-action="Delete" asp-route-id="@blog.BlogId" class="btn btn-danger">Delete</a>
-        <a asp-action="Details" asp-route-id="@blog.BlogId" class="btn btn-info">Select</a>
+        <a asp-action="Edit" asp-route-id="@blogViewModel.BlogId" class="btn btn-warning mb-2">Edit</a>
+        <a asp-action="Delete" asp-route-id="@blogViewModel.BlogId" class="btn btn-danger">Delete</a>
+        <a asp-action="Details" asp-route-id="@blogViewModel.BlogId" class="btn btn-info">Select</a>
 
         <ul>
-            @foreach (var post in blog.Posts)
+            @foreach (var post in blogViewModel.Posts)
             {
                 <li>@post.Title</li>
             }

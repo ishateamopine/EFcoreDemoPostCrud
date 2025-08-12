@@ -21,7 +21,7 @@ namespace EFcoreDemo.Controllers
             _blogRepository = blogRepository;
             _mapper = mapper;
         }
-        // Eager loading - includes Posts
+        // Post : /Blog/Index
         public async Task<IActionResult> Index()
         {
             var blogs = await _context.Blogs.Include(b => b.Posts).ToListAsync();
@@ -49,14 +49,19 @@ namespace EFcoreDemo.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var blog = await _context.Blogs.FindAsync(id);
-
             if (blog == null)
                 return NotFound();
+            // Map Blog → BlogViewModel
+            var viewModel = new BlogViewModel
+            {
+                BlogId = blog.BlogId,
+                Url = blog.Url
+            };
 
-            return View(blog); 
+            return View(viewModel);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(Blog blog) 
+        public async Task<IActionResult> Edit(BlogViewModel blog) 
         {
             if (ModelState.IsValid)
             {
@@ -70,13 +75,21 @@ namespace EFcoreDemo.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             var blog = await _context.Blogs.FindAsync(id);
+
             if (blog == null)
                 return NotFound();
-            return View(blog);
+            // Map Blog → BlogViewModel
+            var viewModel = new BlogViewModel
+            {
+                BlogId = blog.BlogId,
+                Url = blog.Url
+            };
+
+            return View(viewModel);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RemoveBlog(Blog bloged)
+        public async Task<IActionResult> RemoveBlog(BlogViewModel bloged)
         {
             await _blogRepository.DeleteBlogAsync(bloged.BlogId);
             return RedirectToAction(nameof(Index));
@@ -90,8 +103,21 @@ namespace EFcoreDemo.Controllers
             {
                 return NotFound();
             }
+            // Map Blog → BlogViewModel
+            var viewModel = new BlogViewModel
+            {
+                BlogId = blog.BlogId,
+                Url = blog.Url,
+                Posts = blog.Posts.Select(p => new PostViewModel
+                {
+                    PostId = p.PostId,
+                    Title = p.Title,
+                    Content = p.Content,
+                    BlogId = p.BlogId
+                }).ToList()
+            };
 
-            return View(blog);
+            return View(viewModel);
         }      
 
     }

@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using EFcoreDemo.Models.ViewModels;
 
 
-
 namespace EFcoreDemo.Controllers
 {
     public class PostsController : Controller
@@ -46,7 +45,7 @@ namespace EFcoreDemo.Controllers
         {
             if (ModelState.IsValid)
             {
-                var postEntity = new Post
+                var postEntity = new PostViewModel
                 {
                     Title = post.Title,
                     Content = post.Content,
@@ -61,7 +60,7 @@ namespace EFcoreDemo.Controllers
             return View(post1);
         }
 
-        // GET: Posts/Edit/5
+        // GET: View for Editing a Post by id
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -71,7 +70,7 @@ namespace EFcoreDemo.Controllers
             if (post == null)
                 return NotFound();
 
-            var viewModel = new Post
+            var viewModel = new PostViewModel
             {
                 PostId = post.PostId,
                 Title = post.Title,
@@ -82,19 +81,17 @@ namespace EFcoreDemo.Controllers
             return View(viewModel);
         }
 
-        // POST: Posts/Edit/5
+        // POST : Edit a Post by id using Execute UpdateAsync method
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Post viewModel)
+        public async Task<IActionResult> Edit(int id, PostViewModel viewModel)
         {
             if (id != viewModel.PostId)
                 return NotFound();
 
             if (ModelState.IsValid)
             {
-                var affected = await _context.posts
-                    .Where(p => p.PostId == id)
-                    .ExecuteUpdateAsync(p => p
+                var affected = await _context.posts.Where(p => p.PostId == id).ExecuteUpdateAsync(p => p
                         .SetProperty(p => p.Title, viewModel.Title)
                         .SetProperty(p => p.Content, viewModel.Content)
                         .SetProperty(p => p.BlogId, viewModel.BlogId)
@@ -109,17 +106,15 @@ namespace EFcoreDemo.Controllers
             return View(viewModel);
         }
 
-        // GET: Posts/Details/5
+        //GET : View for Details a Post by id
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-                return NotFound();
+            var post = await _context.posts.FirstOrDefaultAsync(p => p.PostId == id);
 
-            var post = await _context.posts.FindAsync(id);
             if (post == null)
                 return NotFound();
-
-            var viewModel = new Post
+            // Map Post → PostViewModel
+            var viewModel = new PostViewModel
             {
                 PostId = post.PostId,
                 Title = post.Title,
@@ -130,7 +125,7 @@ namespace EFcoreDemo.Controllers
             return View(viewModel);
         }
 
-        // GET: Posts/Delete/5
+        //GET : View for Deleting a Post by id
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -139,8 +134,8 @@ namespace EFcoreDemo.Controllers
             var post = await _context.posts.FindAsync(id);
             if (post == null)
                 return NotFound();
-
-            var viewModel = new Post
+            // Map Post → PostViewModel
+            var viewModel = new PostViewModel
             {
                 PostId = post.PostId,
                 Title = post.Title,
@@ -151,7 +146,7 @@ namespace EFcoreDemo.Controllers
             return View(viewModel);
         }
 
-        // POST: Posts/Delete/5
+        // POST: Delete a post by id using Execute DeleteAsync method
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -162,7 +157,6 @@ namespace EFcoreDemo.Controllers
 
             if (deletedRows == 0)
             {
-                // Optional: handle if no row was deleted
                 return NotFound();
             }
 
