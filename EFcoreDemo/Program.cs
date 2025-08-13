@@ -1,17 +1,25 @@
+using EFcoreDemo.CQRS.Handlers;
 using EFcoreDemo.Interface;
 using EFcoreDemo.Models;
 using EFcoreDemo.Models.MappingProfiles;
 using EFcoreDemo.Repositories;
+using EFcoreDemo.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<BlogService>();
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddMediatR(cfg =>cfg.RegisterServicesFromAssembly(typeof(AllBlogHandler).Assembly));
+
 
 builder.Services.Configure<PositionOptions>(
     builder.Configuration.GetSection("Position")
