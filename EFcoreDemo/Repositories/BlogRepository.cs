@@ -10,6 +10,18 @@ namespace EFcoreDemo.Repositories
     {
         private readonly DataContext _context;
         public BlogRepository(DataContext context) => _context = context;
+        public async Task AddAsync(Blog blog) => await _context.Blogs.AddAsync(blog);
+        public async Task UpdateAsync(Blog blog) => _context.Blogs.Update(blog);
+        public async Task<int> DeleteAsync(int blogId)
+        {
+            return await _context.Blogs
+                .Where(b => b.BlogId == blogId)
+                .ExecuteDeleteAsync();
+        }
+
+
+        public async Task<Blog> GetByIdAsync(int id) => await _context.Blogs.FindAsync(id);
+
 
         public async Task<int> ModifyBlogAsync(int blogId, string newUrl)
         {

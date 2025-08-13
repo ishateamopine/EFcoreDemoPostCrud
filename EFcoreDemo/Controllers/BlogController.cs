@@ -1,11 +1,16 @@
 ﻿using AutoMapper;
+using EFcoreDemo.CQRS.Commands;
+using EFcoreDemo.CQRS.Queries;
 using EFcoreDemo.Interface;
 using EFcoreDemo.Models;
 using EFcoreDemo.Models.ViewModels;
 using EFcoreDemo.Repositories;
+using EFcoreDemo.Services;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Reflection.Emit;
 namespace EFcoreDemo.Controllers
@@ -15,11 +20,15 @@ namespace EFcoreDemo.Controllers
         private readonly DataContext _context;
         private readonly IBlogRepository _blogRepository;
         private readonly IMapper _mapper;
-        public BlogController(DataContext context, IBlogRepository blogRepository,IMapper mapper)
+        private readonly BlogService _blogService;
+        private readonly IMediator _mediator;
+        public BlogController(DataContext context, IBlogRepository blogRepository,IMapper mapper, BlogService blogService, IMediator mediator)
         {
             _context = context;
             _blogRepository = blogRepository;
             _mapper = mapper;
+            _blogService = blogService;
+            _mediator = mediator;
         }
         // Post : /Blog/Index
         public async Task<IActionResult> Index()
@@ -39,8 +48,14 @@ namespace EFcoreDemo.Controllers
         {
             if (ModelState.IsValid)
             {
-                int id= await _blogRepository.InsertBlogReturnIdAsync(url);
-                TempData["Msg"] = $"Created id";             
+                //<----------using repository pattern----------------->
+                //int id= await _blogRepository.InsertBlogReturnIdAsync(url);
+
+                //<----------using service pattern------------------>
+                //int id = await _blogService.CreateBlogAsync(model);      
+
+                //<----------using CQRS pattern------------------>
+                int id = await _mediator.Send(new CreateBlogCommand(url));
                 return RedirectToAction(nameof(Index));
             }
             return View(model);
@@ -65,7 +80,14 @@ namespace EFcoreDemo.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _blogRepository.ModifyBlogAsync(blog.BlogId, blog.Url!);
+                //<----------using service pattern------------------>
+                //await _blogService.UpdateBlogAsync(blog);
+
+                //<----------using repository pattern----------------->
+                //await _blogRepository.ModifyBlogAsync(blog.BlogId, blog.Url!);
+
+                //<----------using CQRS pattern------------------>
+                await _mediator.Send(new UpdateBlogCommand(blog.BlogId, blog.Url!));
                 return RedirectToAction(nameof(Index));
             }
 
@@ -91,33 +113,21 @@ namespace EFcoreDemo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveBlog(BlogViewModel bloged)
         {
-            await _blogRepository.DeleteBlogAsync(bloged.BlogId);
+            await _blogService.DeletedBlogAsync(bloged.BlogId);
             return RedirectToAction(nameof(Index));
         }
-        //Select....
+        //Select....using cqrs......
         public async Task<IActionResult> Details(int id)
         {
-            var blog = await _context.Blogs.Include(b => b.Posts).FirstOrDefaultAsync(b => b.BlogId == id);
+            var blog = await _mediator.Send(new GetBlogDetailsQuery(id));
+            //var blog = await _context.Blogs.Include(b => b.Posts).FirstOrDefaultAsync(b => b.BlogId == id);
 
             if (blog == null)
             {
                 return NotFound();
             }
             // Map Blog → BlogViewModel
-            var viewModel = new BlogViewModel
-            {
-                BlogId = blog.BlogId,
-                Url = blog.Url,
-                Posts = blog.Posts.Select(p => new PostViewModel
-                {
-                    PostId = p.PostId,
-                    Title = p.Title,
-                    Content = p.Content,
-                    BlogId = p.BlogId
-                }).ToList()
-            };
-
-            return View(viewModel);
+            return View(blog);
         }      
 
     }

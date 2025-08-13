@@ -41,24 +41,26 @@ namespace EFcoreDemo.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Post post,PostViewModel post1)
+        public async Task<IActionResult> Create(PostViewModel postVm)
         {
             if (ModelState.IsValid)
             {
-                var postEntity = new PostViewModel
+                var postEntity = new Post
                 {
-                    Title = post.Title,
-                    Content = post.Content,
-                    BlogId = post.BlogId
+                    Title = postVm.Title,
+                    Content = postVm.Content,
+                    BlogId = postVm.BlogId
                 };
 
                 _context.Add(postEntity);
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
-            }     
-            return View(post1);
+            }
+
+            return View(postVm);
         }
+
 
         // GET: View for Editing a Post by id
         public async Task<IActionResult> Edit(int? id)
