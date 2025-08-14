@@ -5,6 +5,7 @@
         IBlogRepository Blogs { get; }
         IPostRepository Posts { get; }
         Task<int> CompleteAsync();
+
     }
 
 }

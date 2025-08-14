@@ -1,9 +1,7 @@
 ﻿using EFcoreDemo.CQRS.Commands;
 using EFcoreDemo.Interface;
 using EFcoreDemo.Models;
-using EFcoreDemo.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace EFcoreDemo.CQRS.Handlers
 {
@@ -37,6 +35,7 @@ namespace EFcoreDemo.CQRS.Handlers
 
             blog.Url = request.Url;
 
+            await _uow.Blogs.UpdateAsync(blog);
             await _uow.CompleteAsync();
             return true;
         }
