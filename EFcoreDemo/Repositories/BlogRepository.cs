@@ -11,7 +11,12 @@ namespace EFcoreDemo.Repositories
         private readonly DataContext _context;
         public BlogRepository(DataContext context) => _context = context;
         public async Task AddAsync(Blog blog) => await _context.Blogs.AddAsync(blog);
-        public async Task UpdateAsync(Blog blog) => _context.Blogs.Update(blog);
+
+        public Task UpdateAsync(Blog blog)
+        {
+            _context.Blogs.Update(blog); // fine for detached entity
+            return Task.CompletedTask;
+        }
         public async Task<int> DeleteAsync(int blogId)
         {
             return await _context.Blogs
@@ -20,7 +25,7 @@ namespace EFcoreDemo.Repositories
         }
 
 
-        public async Task<Blog> GetByIdAsync(int id) => await _context.Blogs.FindAsync(id);
+        public async Task<Blog> GetByIdAsync(int blogId) => await _context.Blogs.FirstOrDefaultAsync(b => b.BlogId == blogId);
 
 
         public async Task<int> ModifyBlogAsync(int blogId, string newUrl)

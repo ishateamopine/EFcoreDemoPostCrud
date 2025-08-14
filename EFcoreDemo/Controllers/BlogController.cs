@@ -33,7 +33,16 @@ namespace EFcoreDemo.Controllers
         // Post : /Blog/Index
         public async Task<IActionResult> Index()
         {
+            //<-----------using IQueryable--------------->
+            //IQueryable<Blog> blogs = _context.Blogs;
+
+            //<----------using LazyLoading--------------->
             var blogs = await _context.Blogs.Include(b => b.Posts).ToListAsync();
+
+            //<----------using IEnumerable--------------->
+            //IEnumerable<Blog> blogs = _context.Blogs.ToList();
+
+            //<----------using automapper pattern----------------->
             var blogVMs = _mapper.Map<List<BlogViewModel>>(blogs);
             return View(blogVMs);
         }

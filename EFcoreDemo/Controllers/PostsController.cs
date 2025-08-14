@@ -17,6 +17,7 @@ namespace EFcoreDemo.Controllers
         }
         public async Task<IActionResult> Index()
         {
+            //<-----------Lazy Loading---------------->
             var posts = await _context.posts
                 .Select(p => new PostViewModel
                 {
