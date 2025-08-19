@@ -1,8 +1,11 @@
-﻿using EFcoreDemo.Interface;
+﻿using Azure.Core;
+using EFcoreDemo.Interface;
 using EFcoreDemo.Models;
+using EFcoreDemo.Models.Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Threading;
 
 namespace EFcoreDemo.Repositories
 {
@@ -10,22 +13,37 @@ namespace EFcoreDemo.Repositories
     {
         private readonly DataContext _context;
         public BlogRepository(DataContext context) => _context = context;
-        public async Task AddAsync(Blog blog) => await _context.Blogs.AddAsync(blog);
 
-        public Task UpdateAsync(Blog blog)
+        public async Task<int> InsertBlogAsync(Blog blog, CancellationToken cancellationToken = default)
         {
-            _context.Blogs.Update(blog); // fine for detached entity
-            return Task.CompletedTask;
+            _context.Blogs.Add(blog);
+            await _context.SaveChangesAsync(cancellationToken);
+            return blog.BlogId;
         }
-        public async Task<int> DeleteAsync(int blogId)
+
+        public async Task<bool> DeleteBlogAsync(int blogId, CancellationToken cancellationToken = default)
+        {
+            var blog = await _context.Blogs.FirstOrDefaultAsync(b => b.BlogId == blogId, cancellationToken);
+            if (blog == null) return false;
+
+            _context.Blogs.Remove(blog);             
+            await _context.SaveChangesAsync(cancellationToken);
+            return true;
+        }
+
+        public async Task UpdateAsync(Blog blog, CancellationToken cancellationToken = default)
+        {
+            _context.Blogs.Update(blog);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<Blog?> GetByIdAsync(int blogId, CancellationToken cancellationToken = default)
         {
             return await _context.Blogs
-                .Where(b => b.BlogId == blogId)
-                .ExecuteDeleteAsync();
+                .Include(b => b.Posts)
+                .FirstOrDefaultAsync(b => b.BlogId == blogId, cancellationToken);
         }
 
-
-        public async Task<Blog> GetByIdAsync(int blogId) => await _context.Blogs.FirstOrDefaultAsync(b => b.BlogId == blogId);
 
 
         public async Task<int> ModifyBlogAsync(int blogId, string newUrl)

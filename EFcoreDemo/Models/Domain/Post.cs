@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using EFcoreDemo.Models.Common;
 
-namespace EFcoreDemo.Models
+namespace EFcoreDemo.Models.Domain
 {
-    public class Post
+    public class Post 
     {
         public int PostId { get; set; }
         [StringLength(256)]
@@ -19,4 +20,3 @@ namespace EFcoreDemo.Models
         public virtual Blog Blog { get; set; } = null!;
     }
 }
-    

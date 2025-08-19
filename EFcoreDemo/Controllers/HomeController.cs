@@ -22,8 +22,6 @@ namespace EFcoreDemo.Controllers
         {
             var title = _config["Position:Title"];
             var name = _config["Position:Name"];
-            ViewBag.Title = _pos.Title;
-            ViewBag.Name = _pos.Name;
             return View(_pos);
         }
 

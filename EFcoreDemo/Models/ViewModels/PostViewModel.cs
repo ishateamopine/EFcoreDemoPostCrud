@@ -16,15 +16,15 @@ namespace EFcoreDemo.Models.ViewModels
         public PostViewModelValidator()
         {
             RuleFor(p => p.Title)
-                .NotEmpty().WithMessage("Title required hai.")
-                .MaximumLength(256).WithMessage("Title max 256 characters ka hona chahiye.");
+                .NotEmpty().WithMessage("Title is required.")
+                .MaximumLength(256).WithMessage("Title must be 256 characters.");
 
             RuleFor(p => p.Content)
-                .NotEmpty().WithMessage("Content required hai.")
-                .MinimumLength(10).WithMessage("Content kam se kam 10 characters ka hona chahiye.");
+                .NotEmpty().WithMessage("Content is required.")
+                .MinimumLength(10).WithMessage("Content must be 10 characters.");
 
             RuleFor(p => p.BlogId)
-                .GreaterThan(0).WithMessage("Valid Blog select karo.");
+                .GreaterThan(0).WithMessage("Select any one Valid Blog.");
         }
     }
 }
