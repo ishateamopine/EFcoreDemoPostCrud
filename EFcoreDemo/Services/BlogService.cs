@@ -1,45 +1,41 @@
 ﻿using EFcoreDemo.Interface;
 using EFcoreDemo.Models;
 using EFcoreDemo.Models.ViewModels;
+using EFcoreDemo.CQRS.Commands.Create;
+using EFcoreDemo.CQRS.Commands.Delete;
+using EFcoreDemo.CQRS.Commands.Select;
+using EFcoreDemo.CQRS.Commands.Update;
+using MediatR;
 
 namespace EFcoreDemo.Services
 {
-    public class BlogService
+    public class BlogService : IBlogService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMediator _mediator;
 
-        public BlogService(IUnitOfWork unitOfWork)
+        public BlogService(IMediator mediator)
         {
-            _unitOfWork = unitOfWork;
+            _mediator = mediator;
         }
-        // Create new Blog
-        public async Task<int> CreateBlogAsync(BlogViewModel vm)
-        {
-            var blog = new Blog
-            {
-                Url = vm.Url
-            };
-            await _unitOfWork.Blogs.AddAsync(blog);
-            await _unitOfWork.CompleteAsync();
-            return blog.BlogId;
-        }
-        // Update existing Blog
-        public async Task UpdateBlogAsync(BlogViewModel vm)
-        {
-            var blog = await _unitOfWork.Blogs.GetByIdAsync(vm.BlogId);
-            if (blog == null)
-                throw new Exception("Not found");
 
-            blog.Url = vm.Url;
-            await _unitOfWork.Blogs.UpdateAsync(blog);
-            await _unitOfWork.CompleteAsync();
-        }
-        // Delete Blog
-        public async Task<int> DeletedBlogAsync(int blogId)
+        public async Task<BlogViewModel?> GetByIdAsync(int id)
         {
-            int result = await _unitOfWork.Blogs.DeleteAsync(blogId);
-            await _unitOfWork.CompleteAsync();
-            return result;
+            return await _mediator.Send(new GetBlogDetailsQuery(id));
+        }
+
+        public async Task<int> CreateAsync(string url)
+        {
+            return await _mediator.Send(new CreateBlogCommand(url));
+        }
+
+        public async Task<bool> UpdateAsync(int id, string url)
+        {
+            return await _mediator.Send(new UpdateBlogCommand(id, url));
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            return await _mediator.Send(new DeleteBlogCommand(id));
         }
 
     }

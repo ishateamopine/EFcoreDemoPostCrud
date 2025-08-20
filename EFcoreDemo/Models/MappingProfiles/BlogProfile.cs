@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EFcoreDemo.Models;
+using EFcoreDemo.Models.Domain;
 using EFcoreDemo.Models.ViewModels;
 
 namespace EFcoreDemo.Models.MappingProfiles
@@ -14,13 +14,8 @@ namespace EFcoreDemo.Models.MappingProfiles
 
             // Blog -> BlogViewModel
             CreateMap<Blog, BlogViewModel>()
-                .ForMember(dest => dest.PostCount, opt => opt.MapFrom(src => src.Posts.Count))
-                .ForMember(dest => dest.RssUrl, opt => opt.Ignore())
-                .Include<RssBlog, BlogViewModel>();
-
-            // RssBlog -> BlogViewModel
-            CreateMap<RssBlog, BlogViewModel>()
-                .ForMember(dest => dest.RssUrl, opt => opt.MapFrom(src => src.RssUrl));
+                .ForMember(dest => dest.PostCount, opt => opt.MapFrom(src => src.Posts.Count));
+     
         }
     }
 }

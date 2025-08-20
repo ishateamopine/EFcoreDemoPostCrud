@@ -1,18 +1,15 @@
 ﻿using AutoMapper;
-using EFcoreDemo.CQRS.Commands;
-using EFcoreDemo.CQRS.Queries;
+using EFcoreDemo.CQRS.Commands.Create;
+using EFcoreDemo.CQRS.Commands.Delete;
+using EFcoreDemo.CQRS.Commands.Select;
+using EFcoreDemo.CQRS.Commands.Update;
 using EFcoreDemo.Interface;
 using EFcoreDemo.Models;
 using EFcoreDemo.Models.ViewModels;
-using EFcoreDemo.Repositories;
 using EFcoreDemo.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Internal;
-using System;
-using System.Reflection.Emit;
 namespace EFcoreDemo.Controllers
 {
     public class BlogController : Controller
@@ -30,103 +27,65 @@ namespace EFcoreDemo.Controllers
             _blogService = blogService;
             _mediator = mediator;
         }
-        // Post : /Blog/Index
+        // Post
         public async Task<IActionResult> Index()
         {
-            var blogs = await _context.Blogs.Include(b => b.Posts).ToListAsync();
+            var blogs = await _context.Blogs.Where(b => !b.IsDeleted).ToListAsync();
             var blogVMs = _mapper.Map<List<BlogViewModel>>(blogs);
             return View(blogVMs);
         }
 
-        //Insert....
+        //Get
         public IActionResult Create()
         {
             return View();
-        }     
+        }
+        //Post
         [HttpPost]
         public async Task<IActionResult> Create(string url,BlogViewModel model)
         {
             if (ModelState.IsValid)
             {
-                //<----------using repository pattern----------------->
-                //int id= await _blogRepository.InsertBlogReturnIdAsync(url);
-
-                //<----------using service pattern------------------>
-                //int id = await _blogService.CreateBlogAsync(model);      
-
-                //<----------using CQRS pattern------------------>
-                int id = await _mediator.Send(new CreateBlogCommand(url));
+                var BlogId = await _mediator.Send(new CreateBlogCommand(url));
                 return RedirectToAction(nameof(Index));
             }
-            return View(model);
+            return View("Create Data SuceessFully..!");
         }
-        //Update....
-        public async Task<IActionResult> Edit(int id)
+        //Get
+        public async Task<IActionResult> Edit(int id, string url)
         {
-            var blog = await _context.Blogs.FindAsync(id);
-            if (blog == null)
-                return NotFound();
-            // Map Blog → BlogViewModel
-            var viewModel = new BlogViewModel
-            {
-                BlogId = blog.BlogId,
-                Url = blog.Url
-            };
-
-            return View(viewModel);
+            var blog = await _mediator.Send(new GetBlogDetailsQuery(id));
+            return View(blog);
         }
+        //Post
         [HttpPost]
         public async Task<IActionResult> Edit(BlogViewModel blog) 
         {
             if (ModelState.IsValid)
             {
-                //<----------using service pattern------------------>
-                //await _blogService.UpdateBlogAsync(blog);
-
-                //<----------using repository pattern----------------->
-                //await _blogRepository.ModifyBlogAsync(blog.BlogId, blog.Url!);
-
-                //<----------using CQRS pattern------------------>
-                await _mediator.Send(new UpdateBlogCommand(blog.BlogId, blog.Url!));
+                var result = await _mediator.Send(new UpdateBlogCommand(blog.BlogId, blog.Url!));
                 return RedirectToAction(nameof(Index));
             }
-
             return View(blog); 
         }
-        //Delete....
+        //Get
         public async Task<ActionResult> Delete(int id)
         {
-            var blog = await _context.Blogs.FindAsync(id);
-
-            if (blog == null)
-                return NotFound();
-            // Map Blog → BlogViewModel
-            var viewModel = new BlogViewModel
-            {
-                BlogId = blog.BlogId,
-                Url = blog.Url
-            };
-
-            return View(viewModel);
+            var blog = await _mediator.Send(new GetBlogDetailsQuery(id));
+            return View(blog);
         }
+        //Post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveBlog(BlogViewModel bloged)
         {
-            await _blogService.DeletedBlogAsync(bloged.BlogId);
+            var result = await _mediator.Send(new DeleteBlogCommand(bloged.BlogId));
             return RedirectToAction(nameof(Index));
         }
-        //Select....using cqrs......
+        // GET
         public async Task<IActionResult> Details(int id)
         {
             var blog = await _mediator.Send(new GetBlogDetailsQuery(id));
-            //var blog = await _context.Blogs.Include(b => b.Posts).FirstOrDefaultAsync(b => b.BlogId == id);
-
-            if (blog == null)
-            {
-                return NotFound();
-            }
-            // Map Blog → BlogViewModel
             return View(blog);
         }      
 

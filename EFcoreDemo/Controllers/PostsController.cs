@@ -1,8 +1,12 @@
-﻿using EFcoreDemo.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using EFcoreDemo.CQRS.Commands.Create;
+using EFcoreDemo.CQRS.Commands.Delete;
+using EFcoreDemo.CQRS.Commands.Select;
+using EFcoreDemo.CQRS.Commands.Update;
+using EFcoreDemo.Models;
 using EFcoreDemo.Models.ViewModels;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 
 namespace EFcoreDemo.Controllers
@@ -10,159 +14,81 @@ namespace EFcoreDemo.Controllers
     public class PostsController : Controller
     {
         private readonly DataContext _context;
+        private readonly IMediator _mediator;
 
-        public PostsController(DataContext context)
+        public PostsController(DataContext context, IMediator mediator)
         {
             _context = context;
+            _mediator = mediator;
         }
         public async Task<IActionResult> Index()
         {
-            var posts = await _context.posts
-                .Select(p => new PostViewModel
-                {
-                    PostId = p.PostId,
-                    Title = p.Title,
-                    Content = p.Content,
-                    BlogId = p.BlogId
-                }).ToListAsync();
-            
+            var posts = await _mediator.Send(new GetAllPostsQuery());
             return View(posts);
         }
-
+        // GET
         public IActionResult Create()
         {
             ViewBag.BlogId = new SelectList(_context.Blogs, "BlogId", "Url");
             return View();
         }
 
-        public IActionResult GetCreated()
-        {
-            return View();
-        }
+        // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PostViewModel postVm)
         {
             if (ModelState.IsValid)
             {
-                var postEntity = new Post
-                {
-                    Title = postVm.Title,
-                    Content = postVm.Content,
-                    BlogId = postVm.BlogId
-                };
-
-                _context.Add(postEntity);
-                await _context.SaveChangesAsync();
-
+                await _mediator.Send(new CreatePostCommand(postVm));
                 return RedirectToAction(nameof(Index));
             }
-
             return View(postVm);
         }
 
 
-        // GET: View for Editing a Post by id
-        public async Task<IActionResult> Edit(int? id)
+        // GET
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-                return NotFound();
-
-            var post = await _context.posts.FindAsync(id);
-            if (post == null)
-                return NotFound();
-
-            var viewModel = new PostViewModel
-            {
-                PostId = post.PostId,
-                Title = post.Title,
-                Content = post.Content,
-                BlogId = post.BlogId
-            };
-
-            return View(viewModel);
+            var post = await _mediator.Send(new GetPostQuery(id));
+            if (post == null) return NotFound();
+            return View(post);
         }
 
-        // POST : Edit a Post by id using Execute UpdateAsync method
+        // POST 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, PostViewModel viewModel)
         {
-            if (id != viewModel.PostId)
-                return NotFound();
-
             if (ModelState.IsValid)
             {
-                var affected = await _context.posts.Where(p => p.PostId == id).ExecuteUpdateAsync(p => p
-                        .SetProperty(p => p.Title, viewModel.Title)
-                        .SetProperty(p => p.Content, viewModel.Content)
-                        .SetProperty(p => p.BlogId, viewModel.BlogId)
-                    );
-
-                if (affected == 0)
-                    return NotFound(); 
-
+                await _mediator.Send(new UpdatePostCommand(viewModel));
                 return RedirectToAction(nameof(Index));
             }
-
             return View(viewModel);
         }
-
-        //GET : View for Details a Post by id
-        public async Task<IActionResult> Details(int? id)
+        
+        //GET
+        public async Task<IActionResult> Delete(int id)
         {
-            var post = await _context.posts.FirstOrDefaultAsync(p => p.PostId == id);
-
-            if (post == null)
-                return NotFound();
-            // Map Post → PostViewModel
-            var viewModel = new PostViewModel
-            {
-                PostId = post.PostId,
-                Title = post.Title,
-                Content = post.Content,
-                BlogId = post.BlogId
-            };
-
-            return View(viewModel);
+            var post = await _mediator.Send(new GetPostQuery(id));
+            if (post == null) return NotFound();
+            return View(post);
         }
 
-        //GET : View for Deleting a Post by id
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var post = await _context.posts.FindAsync(id);
-            if (post == null)
-                return NotFound();
-            // Map Post → PostViewModel
-            var viewModel = new PostViewModel
-            {
-                PostId = post.PostId,
-                Title = post.Title,
-                Content = post.Content,
-                BlogId = post.BlogId
-            };
-
-            return View(viewModel);
-        }
-
-        // POST: Delete a post by id using Execute DeleteAsync method
+        // POST
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            int deletedRows = await _context.posts
-                .Where(p => p.PostId == id)
-                .ExecuteDeleteAsync();
-
-            if (deletedRows == 0)
-            {
-                return NotFound();
-            }
-
+            await _mediator.Send(new DeletePostCommand(id));
             return RedirectToAction(nameof(Index));
         }
+        public async Task<IActionResult> Details(int id)
+        {
+            var post = await _mediator.Send(new GetPostQuery(id));
+            return View(post);
+        }
+
     }
 }
