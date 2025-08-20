@@ -1,6 +1,5 @@
-﻿using EFcoreDemo.Interface;
-using EFcoreDemo.Models;
-using System;
+﻿using EFcoreDemo.Models.DataContext;
+using EFcoreDemo.Repositories.Interface;
 
 namespace EFcoreDemo.Repositories
 {

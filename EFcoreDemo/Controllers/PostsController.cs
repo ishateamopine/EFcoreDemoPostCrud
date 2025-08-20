@@ -1,8 +1,9 @@
-﻿using EFcoreDemo.CQRS.Commands.Create;
-using EFcoreDemo.CQRS.Commands.Delete;
-using EFcoreDemo.CQRS.Commands.Select;
-using EFcoreDemo.CQRS.Commands.Update;
-using EFcoreDemo.Models;
+﻿using EFcoreDemo.CQRS.Posts.Command.Create;
+using EFcoreDemo.CQRS.Posts.Command.Delete;
+using EFcoreDemo.CQRS.Posts.Command.Update;
+using EFcoreDemo.CQRS.Posts.Queries.GetAll;
+using EFcoreDemo.CQRS.Posts.Queries.GetById;
+using EFcoreDemo.Models.DataContext;
 using EFcoreDemo.Models.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ namespace EFcoreDemo.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var posts = await _mediator.Send(new GetAllPostsQuery());
+            var posts = await _mediator.Send(new GetAllPostsCommand());
             return View(posts);
         }
         // GET
@@ -50,7 +51,7 @@ namespace EFcoreDemo.Controllers
         // GET
         public async Task<IActionResult> Edit(int id)
         {
-            var post = await _mediator.Send(new GetPostQuery(id));
+            var post = await _mediator.Send(new GetPostByIdCommand(id));
             if (post == null) return NotFound();
             return View(post);
         }
@@ -71,7 +72,7 @@ namespace EFcoreDemo.Controllers
         //GET
         public async Task<IActionResult> Delete(int id)
         {
-            var post = await _mediator.Send(new GetPostQuery(id));
+            var post = await _mediator.Send(new GetPostByIdCommand(id));
             if (post == null) return NotFound();
             return View(post);
         }
@@ -86,7 +87,7 @@ namespace EFcoreDemo.Controllers
         }
         public async Task<IActionResult> Details(int id)
         {
-            var post = await _mediator.Send(new GetPostQuery(id));
+            var post = await _mediator.Send(new GetPostByIdCommand(id));
             return View(post);
         }
 

@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
-using EFcoreDemo.CQRS.Commands.Create;
-using EFcoreDemo.CQRS.Commands.Delete;
-using EFcoreDemo.CQRS.Commands.Select;
-using EFcoreDemo.CQRS.Commands.Update;
-using EFcoreDemo.Interface;
-using EFcoreDemo.Models;
+using EFcoreDemo.CQRS.Blogs.Command.Create;
+using EFcoreDemo.CQRS.Blogs.Command.Delete;
+using EFcoreDemo.CQRS.Blogs.Command.Update;
+using EFcoreDemo.CQRS.Blogs.Queries.GetAll;
+using EFcoreDemo.CQRS.Blogs.Queries.GetById;
+using EFcoreDemo.Models.DataContext;
+using EFcoreDemo.Models.Domain;
 using EFcoreDemo.Models.ViewModels;
+using EFcoreDemo.Repositories.Interface;
 using EFcoreDemo.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 namespace EFcoreDemo.Controllers
 {
     public class BlogController : Controller
@@ -28,11 +30,10 @@ namespace EFcoreDemo.Controllers
             _mediator = mediator;
         }
         // Post
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken = default)
         {
-            var blogs = await _context.Blogs.Where(b => !b.IsDeleted).ToListAsync();
-            var blogVMs = _mapper.Map<List<BlogViewModel>>(blogs);
-            return View(blogVMs);
+            var blogs = await _mediator.Send(new GetAllBlogsQueryWithDetails(), cancellationToken);
+            return View(blogs);
         }
 
         //Get
@@ -49,13 +50,15 @@ namespace EFcoreDemo.Controllers
                 var BlogId = await _mediator.Send(new CreateBlogCommand(url));
                 return RedirectToAction(nameof(Index));
             }
-            return View("Create Data SuceessFully..!");
+            return View(nameof(model));
         }
         //Get
         public async Task<IActionResult> Edit(int id, string url)
         {
-            var blog = await _mediator.Send(new GetBlogDetailsQuery(id));
-            return View(blog);
+            var blog = await _mediator.Send(new GetBlogByIdCommand(id));
+            if (blog == null) return NotFound();
+            var command = new UpdateBlogCommand(blog.BlogId, blog.Url!);
+            return View(command);
         }
         //Post
         [HttpPost]
@@ -63,15 +66,16 @@ namespace EFcoreDemo.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _mediator.Send(new UpdateBlogCommand(blog.BlogId, blog.Url!));
+                var command = new UpdateBlogCommand(blog.BlogId, blog.Url!);
+                await _mediator.Send(command);
                 return RedirectToAction(nameof(Index));
             }
-            return View(blog); 
+            return View(blog);
         }
         //Get
         public async Task<ActionResult> Delete(int id)
         {
-            var blog = await _mediator.Send(new GetBlogDetailsQuery(id));
+            var blog = await _mediator.Send(new GetBlogByIdCommand(id));
             return View(blog);
         }
         //Post
@@ -85,7 +89,7 @@ namespace EFcoreDemo.Controllers
         // GET
         public async Task<IActionResult> Details(int id)
         {
-            var blog = await _mediator.Send(new GetBlogDetailsQuery(id));
+            var blog = await _mediator.Send(new GetBlogByIdCommand(id));
             return View(blog);
         }      
 

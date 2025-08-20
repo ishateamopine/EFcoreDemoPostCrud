@@ -1,11 +1,9 @@
-﻿using Azure.Core;
-using EFcoreDemo.Interface;
-using EFcoreDemo.Models;
+﻿using EFcoreDemo.Models.DataContext;
 using EFcoreDemo.Models.Domain;
+using EFcoreDemo.Repositories.Interface;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Threading;
 
 namespace EFcoreDemo.Repositories
 {
@@ -26,7 +24,7 @@ namespace EFcoreDemo.Repositories
             var blog = await _context.Blogs.FirstOrDefaultAsync(b => b.BlogId == blogId, cancellationToken);
             if (blog == null) return false;
 
-            _context.Blogs.Remove(blog);             
+            _context.Blogs.Remove(blog);
             await _context.SaveChangesAsync(cancellationToken);
             return true;
         }
@@ -37,14 +35,21 @@ namespace EFcoreDemo.Repositories
             await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<Blog?> GetByIdAsync(int blogId, CancellationToken cancellationToken = default)
+        public async Task<Blog> GetByIdAsync(int blogId, CancellationToken cancellationToken = default)
         {
-            return await _context.Blogs
+            var entity = await _context.Blogs
                 .Include(b => b.Posts)
                 .FirstOrDefaultAsync(b => b.BlogId == blogId, cancellationToken);
+            return entity ?? new Blog();
         }
-
-
+        public async Task<List<Blog>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+                return await _context.Blogs.Where(b => !b.IsDeleted).AsNoTracking().ToListAsync(cancellationToken);     
+        }
+        public async Task<bool> UrlExistsAsync(string url, CancellationToken cancellationToken = default)
+        {
+            return await _context.Blogs.AnyAsync(b => b.Url == url && !b.IsDeleted, cancellationToken);
+        }
 
         public async Task<int> ModifyBlogAsync(int blogId, string newUrl)
         {

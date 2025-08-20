@@ -1,7 +1,8 @@
-using EFcoreDemo.Interface;
-using EFcoreDemo.Models;
+using EFcoreDemo.Models.ConfigOptions;
+using EFcoreDemo.Models.DataContext;
 using EFcoreDemo.Models.MappingProfiles;
 using EFcoreDemo.Repositories;
+using EFcoreDemo.Repositories.Interface;
 using EFcoreDemo.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -22,7 +23,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Get
 builder.Services.AddAutoMapper(typeof(PostProfile));
 
 
-builder.Services.Configure<PositionOptions>(
+builder.Services.Configure<ConfigOptions>(
     builder.Configuration.GetSection("Position"));
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(BlogProfile));

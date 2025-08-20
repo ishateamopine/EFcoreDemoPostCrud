@@ -1,10 +1,9 @@
-﻿using EFcoreDemo.Interface;
-using EFcoreDemo.Models;
+﻿using EFcoreDemo.CQRS.Blogs.Command.Create;
+using EFcoreDemo.CQRS.Blogs.Command.Delete;
+using EFcoreDemo.CQRS.Blogs.Command.Update;
+using EFcoreDemo.CQRS.Blogs.Queries.GetById;
 using EFcoreDemo.Models.ViewModels;
-using EFcoreDemo.CQRS.Commands.Create;
-using EFcoreDemo.CQRS.Commands.Delete;
-using EFcoreDemo.CQRS.Commands.Select;
-using EFcoreDemo.CQRS.Commands.Update;
+using EFcoreDemo.Repositories.Interface;
 using MediatR;
 
 namespace EFcoreDemo.Services
@@ -20,7 +19,7 @@ namespace EFcoreDemo.Services
 
         public async Task<BlogViewModel?> GetByIdAsync(int id)
         {
-            return await _mediator.Send(new GetBlogDetailsQuery(id));
+            return await _mediator.Send(new GetBlogByIdCommand(id));
         }
 
         public async Task<int> CreateAsync(string url)

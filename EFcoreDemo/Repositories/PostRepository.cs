@@ -1,9 +1,7 @@
-﻿using EFcoreDemo.Interface;
-using EFcoreDemo.Models;
+﻿using EFcoreDemo.Models.DataContext;
 using EFcoreDemo.Models.Domain;
-using EFcoreDemo.Models.ViewModels;
+using EFcoreDemo.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace EFcoreDemo.Repositories
 {
