@@ -11,10 +11,14 @@ namespace EFcoreDemo.CQRS.Blogs.Command.Delete
         {
             _blogRepository = blogRepository;
         }
-
+        #region Delete
+        /// <summary>
+        // Deletes a blog entry by its ID.
+        /// </summary>
         public async Task<bool> Handle(DeleteBlogCommand request, CancellationToken cancellationToken)
         {
             return await _blogRepository.DeleteBlogAsync(request.BlogId, cancellationToken);
         }
+        #endregion
     }
 }

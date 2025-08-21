@@ -46,11 +46,6 @@ namespace EFcoreDemo.Repositories
         {
                 return await _context.Blogs.Where(b => !b.IsDeleted).AsNoTracking().ToListAsync(cancellationToken);     
         }
-        public async Task<bool> UrlExistsAsync(string url, CancellationToken cancellationToken = default)
-        {
-            return await _context.Blogs.AnyAsync(b => b.Url == url && !b.IsDeleted, cancellationToken);
-        }
-
         public async Task<int> ModifyBlogAsync(int blogId, string newUrl)
         {
             return await _context.Database.ExecuteSqlInterpolatedAsync(

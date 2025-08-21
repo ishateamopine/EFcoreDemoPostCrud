@@ -41,36 +41,49 @@ namespace EFcoreDemo.Controllers
         {
             return View();
         }
-        //Post
         [HttpPost]
-        public async Task<IActionResult> Create(string url,BlogViewModel model)
+        public async Task<IActionResult> Create(Blog blog)
         {
-            if (ModelState.IsValid)
-            {
-                var BlogId = await _mediator.Send(new CreateBlogCommand(url));
-                return RedirectToAction(nameof(Index));
-            }
-            return View(nameof(model));
+            if (!ModelState.IsValid)
+                return View();
+
+            await _mediator.Send(new CreateBlogCommand(blog.Url ?? string.Empty));
+            return RedirectToAction("Index");
         }
+        //[HttpPost]
+        //public async Task<IActionResult> Create(CreateBlogCommand command)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return View(command);
+
+        //    await _mediator.Send(command);
+        //    return RedirectToAction("Index");
+        //}
+
         //Get
-        public async Task<IActionResult> Edit(int id, string url)
+        public async Task<IActionResult> Edit(int id, string url, CancellationToken cancellationToken)
         {
-            var blog = await _mediator.Send(new GetBlogByIdCommand(id));
-            if (blog == null) return NotFound();
-            var command = new UpdateBlogCommand(blog.BlogId, blog.Url!);
-            return View(command);
+            var blog = await _mediator.Send(new GetBlogByIdCommand(id),cancellationToken);
+            return View(blog);
         }
         //Post
         [HttpPost]
-        public async Task<IActionResult> Edit(BlogViewModel blog) 
+        public async Task<IActionResult> Edit(UpdateBlogCommand command) 
         {
-            if (ModelState.IsValid)
+            try
             {
-                var command = new UpdateBlogCommand(blog.BlogId, blog.Url!);
-                await _mediator.Send(command);
-                return RedirectToAction(nameof(Index));
+                var ok = await _mediator.Send(command);
+                if (ok) return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("", "Blog not found.");
+                return View(command);
             }
-            return View(blog);
+            catch (FluentValidation.ValidationException ex)
+            {
+                foreach (var e in ex.Errors)
+                    ModelState.AddModelError(e.PropertyName ?? nameof(command.Url), e.ErrorMessage);
+
+                return View(command);
+            }
         }
         //Get
         public async Task<ActionResult> Delete(int id)

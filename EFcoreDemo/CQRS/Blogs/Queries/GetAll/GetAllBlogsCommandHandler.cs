@@ -15,11 +15,15 @@ namespace EFcoreDemo.CQRS.Blogs.Queries.GetAll
             _repository = repository;
             _mapper = mapper;
         }
-
+        #region GetAll
+        /// <summary>
+        // Retrieves all blog entries with their details.
+        /// </summary>
         public async Task<IEnumerable<BlogViewModel>> Handle(GetAllBlogsQueryWithDetails request, CancellationToken cancellationToken)
         {
             var blogs = await _repository.GetAllAsync(cancellationToken);
             return _mapper.Map<IEnumerable<BlogViewModel>>(blogs);
         }
+        #endregion
     }
 }

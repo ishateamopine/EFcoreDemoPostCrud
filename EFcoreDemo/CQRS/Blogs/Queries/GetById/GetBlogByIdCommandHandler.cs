@@ -15,12 +15,16 @@ namespace EFcoreDemo.CQRS.Blogs.Queries.GetById
             _repository = repository;
             _mapper = mapper;
         }
-
+        #region GetById
+        /// <summary>
+        // revieves a blog entry by its ID.
+        /// </summary>
         public async Task<BlogViewModel?> Handle(GetBlogByIdCommand request, CancellationToken cancellationToken)
         {
             var blog = await _repository.GetByIdAsync(request.BlogId, cancellationToken);
             if (blog == null) return null;
             return _mapper.Map<BlogViewModel>(blog);
         }
+        #endregion
     }
 }
