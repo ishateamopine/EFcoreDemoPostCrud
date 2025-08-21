@@ -1,3 +1,5 @@
+using EFcoreDemo.CQRS.Common;
+using EFcoreDemo.CQRS.Common.Interface;
 using EFcoreDemo.Models.ConfigOptions;
 using EFcoreDemo.Models.DataContext;
 using EFcoreDemo.Models.MappingProfiles;
@@ -17,11 +19,12 @@ builder.Services.AddScoped<IBlogRepository, BlogRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBlogService, BlogService>();
+builder.Services.AddScoped<IBlogValidator, BlogValidator>();
+
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<BlogService>();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 builder.Services.AddAutoMapper(typeof(PostProfile));
-
 
 builder.Services.Configure<ConfigOptions>(
     builder.Configuration.GetSection("Position"));
@@ -37,7 +40,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
-
 
 var app = builder.Build();
 

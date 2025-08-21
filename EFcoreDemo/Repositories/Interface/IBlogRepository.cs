@@ -9,7 +9,7 @@ namespace EFcoreDemo.Repositories.Interface
         Task<bool> DeleteBlogAsync(int blogId, CancellationToken cancellationToken);
         Task UpdateAsync(Blog blog, CancellationToken cancellationToken);
         Task<List<Blog>> GetAllAsync(CancellationToken cancellationToken);
-        Task<bool> UrlExistsAsync(string url, CancellationToken cancellationToken = default);
+
         //Store Procedure
         Task<int> InsertBlogReturnIdAsync(string url);
         Task<int> ModifyBlogAsync(int blxogId, string newUrl);
