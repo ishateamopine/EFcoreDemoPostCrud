@@ -6,5 +6,5 @@ using MediatR;
 
 namespace EFcoreDemo.CQRS.Posts.Command.Create
 {
-    public record CreatePostCommand(PostViewModel Posts) : IRequest<bool>;
+    public record CreatePostCommand(PostViewModel posts) : IRequest<bool>;
 }

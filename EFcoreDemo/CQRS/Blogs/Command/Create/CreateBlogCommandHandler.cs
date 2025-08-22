@@ -15,11 +15,13 @@ namespace EFcoreDemo.CQRS.Blogs.Command.Create
             _blogRepository = blogRepository;
             _blogValidator = blogValidator;
         }
+        #region
+        /// <summary>
+        /// Handles the creation of a new blog entry.
+        /// </summary>
         public async Task<int> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
         {
-            var result = await _blogValidator.ValidateAsync(request);
-
-
+            await _blogValidator.ValidateDuplicateUrlAsync(request.Url, cancellationToken);
             var blog = new Blog
             {
                 Url = request.Url,
@@ -28,5 +30,6 @@ namespace EFcoreDemo.CQRS.Blogs.Command.Create
             };
             return await _blogRepository.InsertBlogAsync(blog, cancellationToken);
         }
+        #endregion
     }
 }

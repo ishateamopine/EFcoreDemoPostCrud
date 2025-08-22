@@ -6,6 +6,10 @@ namespace EFcoreDemo.Models.MappingProfiles
 {
     public class BlogProfile : Profile
     {
+        #region
+        /// <summary>
+        // Maps domain models to view models for blogs and posts.
+        /// </summary>
         public BlogProfile()
         {
             // Post -> PostViewModel-using auto mapper
@@ -14,8 +18,8 @@ namespace EFcoreDemo.Models.MappingProfiles
 
             // Blog -> BlogViewModel
             CreateMap<Blog, BlogViewModel>()
-                .ForMember(dest => dest.PostCount, opt => opt.MapFrom(src => src.Posts.Count));
-     
+                .ForMember(dest => dest.PostCount, opt => opt.MapFrom(src => src.Posts.Count));    
         }
+        #endregion
     }
 }

@@ -17,9 +17,12 @@ namespace EFcoreDemo.Repositories
             Blogs = blogRepository;
             Posts = postRepository;
         }
-
+        #region
+        /// <summary>
+        // Saves all changes made in this context to the underlying database.
+        /// </summary>
         public async Task<int> CompleteAsync() =>await _context.SaveChangesAsync();
-
+        #endregion
         public void Dispose() => _context.Dispose();
     }
 }

@@ -18,23 +18,35 @@ namespace EFcoreDemo.Controllers
             _pos = pos.Value;
             _config = config;
         }
-
+        #region
+        /// <summary>
+        // Displays the home page with position details.
+        /// </summary>
         public IActionResult Index()
         {
             var title = _config["Position:Title"];
             var name = _config["Position:Name"];
             return View(_pos);
         }
-
+        #endregion
+        #region
+        /// <summary>
+        // Displays the privacy policy page.
+        /// </summary>
         public IActionResult Privacy()
         {
             return View();
         }
-
+        #endregion
+        #region
+        /// <summary>
+        // Handles errors and displays the error view.
+        /// </summary>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        #endregion
     }
 }

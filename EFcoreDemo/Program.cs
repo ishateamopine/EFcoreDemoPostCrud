@@ -20,6 +20,8 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<IBlogValidator, BlogValidator>();
+builder.Services.AddScoped<IPostValidator, PostValidator>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<BlogService>();
@@ -32,7 +34,7 @@ builder.Services.Configure<ConfigOptions>(
 builder.Services.AddAutoMapper(typeof(BlogProfile));
 
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), b => b.CommandTimeout(120))
     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
 // Add services to the container.

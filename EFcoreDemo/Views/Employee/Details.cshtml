@@ -1,0 +1,27 @@
+﻿@model EFcoreDemo.Models.Domain.Employee
+@{
+    ViewData["Title"] = "Employee Details";
+}
+<h2>@ViewData["Title"]</h2>
+<table class="table">
+    <tr>
+        <th>Employee ID</th>
+        <td>@Model.EmpId</td>
+    </tr>
+    <tr>
+        <th>Employee Name</th>
+        <td>@Model.EmpName</td>
+    </tr>
+    <tr>
+        <th>Employee Email</th>
+        <td>@Model.EmpEmail</td>
+    </tr>
+    <tr>
+        <th>Employee Salary</th>
+        <td>@Model.EmpSalary</td>
+    </tr>
+    <tr>
+        <th>Department ID</th>
+        <td>@Model.DeptId</td>
+    </tr>
+</table>

@@ -12,13 +12,21 @@ namespace EFcoreDemo.Repositories
         private readonly DataContext _context;
         public BlogRepository(DataContext context) => _context = context;
 
+        #region
+        /// <summary>
+        // Inserts a new blog entry into the database.
+        /// </summary>
         public async Task<int> InsertBlogAsync(Blog blog, CancellationToken cancellationToken = default)
         {
             _context.Blogs.Add(blog);
             await _context.SaveChangesAsync(cancellationToken);
             return blog.BlogId;
         }
-
+        #endregion
+        #region
+        /// <summary>
+        // Deletes a blog entry from the database by its ID.
+        /// </summary>
         public async Task<bool> DeleteBlogAsync(int blogId, CancellationToken cancellationToken = default)
         {
             var blog = await _context.Blogs.FirstOrDefaultAsync(b => b.BlogId == blogId, cancellationToken);
@@ -28,13 +36,21 @@ namespace EFcoreDemo.Repositories
             await _context.SaveChangesAsync(cancellationToken);
             return true;
         }
-
+        #endregion
+        #region
+        /// <summary>
+        // Updates an existing blog entry in the database.
+        /// </summary>
         public async Task UpdateAsync(Blog blog, CancellationToken cancellationToken = default)
         {
             _context.Blogs.Update(blog);
             await _context.SaveChangesAsync(cancellationToken);
         }
-
+        #endregion
+        #region
+        /// <summary>
+        // Retrieves a blog entry by its ID, including its associated posts.
+        /// </summary>
         public async Task<Blog> GetByIdAsync(int blogId, CancellationToken cancellationToken = default)
         {
             var entity = await _context.Blogs
@@ -42,24 +58,48 @@ namespace EFcoreDemo.Repositories
                 .FirstOrDefaultAsync(b => b.BlogId == blogId, cancellationToken);
             return entity ?? new Blog();
         }
+        #endregion
+        #region
+        /// <summary>
+        // Retrieves all blog entries from the database.
+        /// </summary>
         public async Task<List<Blog>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-                return await _context.Blogs.Where(b => !b.IsDeleted).AsNoTracking().ToListAsync(cancellationToken);     
+            try
+            {
+                return await _context.Blogs.Where(b => !b.IsDeleted).AsNoTracking().ToListAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                return new List<Blog>();
+            }
         }
+        #endregion
+        #region
+        /// <summary>
+        // Retrieves all blog entries with their associated posts.
+        /// </summary>
         public async Task<int> ModifyBlogAsync(int blogId, string newUrl)
         {
             return await _context.Database.ExecuteSqlInterpolatedAsync(
                 $"EXEC dbo.modify_blog {blogId}, {newUrl}"
             );
         }
-
+        #endregion
+        #region
+        /// <summary>
+        // Deletes a blog entry from the database by its ID using a stored procedure.
         public async Task<int> DeleteBlogAsync(int blogId)
         {
             return await _context.Database.ExecuteSqlInterpolatedAsync(
                 $"EXEC dbo.delete_blog {blogId}"
             );
         }
-
+        #endregion
+        #region
+        /// <summary>
+        // Inserts a new blog entry into the database using a stored procedure and returns the new blog ID.
+        /// </summary>
         public async Task<int> InsertBlogReturnIdAsync(string url)
         {
             using var conn = _context.Database.GetDbConnection();
@@ -79,5 +119,6 @@ namespace EFcoreDemo.Repositories
 
             return pOut.Value == DBNull.Value ? 0 : Convert.ToInt32(pOut.Value);
         }
+        #endregion
     }
 }

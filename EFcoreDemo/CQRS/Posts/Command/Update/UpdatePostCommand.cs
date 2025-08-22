@@ -6,5 +6,5 @@ using MediatR;
 
 namespace EFcoreDemo.CQRS.Posts.Command.Update
 {
-    public record UpdatePostCommand(PostViewModel Posts) : IRequest<bool>;
+    public record UpdatePostCommand(PostViewModel posts) : IRequest<bool>;
 }
