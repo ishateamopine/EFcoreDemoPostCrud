@@ -16,17 +16,14 @@ namespace EFcoreDemo.Services
         {
             _mediator = mediator;
         }
-
         public async Task<BlogViewModel?> GetByIdAsync(int id)
         {
             return await _mediator.Send(new GetBlogByIdCommand(id));
         }
-
         public async Task<int> CreateAsync(string url)
         {
             return await _mediator.Send(new CreateBlogCommand(url));
         }
-
         public async Task<bool> UpdateAsync(int id, string url)
         {
             return await _mediator.Send(new UpdateBlogCommand(id, url));

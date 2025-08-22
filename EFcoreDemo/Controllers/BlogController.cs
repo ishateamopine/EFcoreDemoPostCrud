@@ -11,7 +11,6 @@ using EFcoreDemo.Repositories.Interface;
 using EFcoreDemo.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata;
 namespace EFcoreDemo.Controllers
 {
     public class BlogController : Controller
@@ -29,14 +28,20 @@ namespace EFcoreDemo.Controllers
             _blogService = blogService;
             _mediator = mediator;
         }
-        // Post
+        #region
+        /// <summary>
+        // Retrieves all blog entries with their details.
+        /// </summary>
         public async Task<IActionResult> Index(CancellationToken cancellationToken = default)
         {
             var blogs = await _mediator.Send(new GetAllBlogsQueryWithDetails(), cancellationToken);
             return View(blogs);
         }
-
-        //Get
+        #endregion
+        #region
+        /// <summary>
+        // Creates a new blog entry.
+        /// </summary>
         public IActionResult Create()
         {
             return View();
@@ -44,48 +49,51 @@ namespace EFcoreDemo.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Blog blog)
         {
-            if (!ModelState.IsValid)
-                return View();
+            try
+            {
+                if (!ModelState.IsValid)
+                    return View();
 
-            await _mediator.Send(new CreateBlogCommand(blog.Url ?? string.Empty));
-            return RedirectToAction("Index");
+                await _mediator.Send(new CreateBlogCommand(blog.Url ?? string.Empty));
+                return RedirectToAction("Index");
+            }
+            catch(InvalidOperationException ex)
+            {
+                ModelState.AddModelError(nameof(blog.Url), ex.Message);
+                return View(blog);
+            }
         }
-        //[HttpPost]
-        //public async Task<IActionResult> Create(CreateBlogCommand command)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return View(command);
-
-        //    await _mediator.Send(command);
-        //    return RedirectToAction("Index");
-        //}
-
-        //Get
-        public async Task<IActionResult> Edit(int id, string url, CancellationToken cancellationToken)
+        #endregion
+        #region
+        /// <summary>
+        /// Retrieves a blog entry by its ID for editing.
+        /// </summary>
+        public async Task<IActionResult> Edit(int id)
         {
-            var blog = await _mediator.Send(new GetBlogByIdCommand(id),cancellationToken);
+            var blog = await _mediator.Send(new GetBlogByIdCommand(id));
             return View(blog);
         }
-        //Post
         [HttpPost]
-        public async Task<IActionResult> Edit(UpdateBlogCommand command) 
+        public async Task<IActionResult> Edit(BlogViewModel blog)
         {
             try
             {
-                var ok = await _mediator.Send(command);
-                if (ok) return RedirectToAction(nameof(Index));
-                ModelState.AddModelError("", "Blog not found.");
-                return View(command);
+                if (!ModelState.IsValid)
+                    return View();
+                await _mediator.Send(new UpdateBlogCommand(blog.BlogId, blog.Url ?? string.Empty));
+                return RedirectToAction("Index");
             }
-            catch (FluentValidation.ValidationException ex)
+            catch (Exception ex)
             {
-                foreach (var e in ex.Errors)
-                    ModelState.AddModelError(e.PropertyName ?? nameof(command.Url), e.ErrorMessage);
-
-                return View(command);
+                ModelState.AddModelError(nameof(blog.Url), ex.Message);
+                return View(blog);
             }
         }
-        //Get
+        #endregion
+        #region
+        /// <summary>
+        //Deletes a blog entry by its ID.
+        /// </summary>
         public async Task<ActionResult> Delete(int id)
         {
             var blog = await _mediator.Send(new GetBlogByIdCommand(id));
@@ -99,12 +107,16 @@ namespace EFcoreDemo.Controllers
             var result = await _mediator.Send(new DeleteBlogCommand(bloged.BlogId));
             return RedirectToAction(nameof(Index));
         }
-        // GET
+        #endregion
+        #region
+        /// <summary>
+        // Retrieves the details of a blog entry by its ID.
+        /// </summary>
         public async Task<IActionResult> Details(int id)
         {
             var blog = await _mediator.Send(new GetBlogByIdCommand(id));
             return View(blog);
-        }      
-
+        }
+        #endregion
     }
 }

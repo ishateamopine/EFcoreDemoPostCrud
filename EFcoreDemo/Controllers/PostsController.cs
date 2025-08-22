@@ -22,62 +22,85 @@ namespace EFcoreDemo.Controllers
             _context = context;
             _mediator = mediator;
         }
+        #region
+        /// <summary>
+        // Retrieves all posts with their details.
+        /// </summary>
         public async Task<IActionResult> Index()
         {
             var posts = await _mediator.Send(new GetAllPostsCommand());
             return View(posts);
         }
-        // GET
+        #endregion
+        #region
+        /// <summary>
+        // Creates a new post.  
+        /// </summary>
         public IActionResult Create()
         {
             ViewBag.BlogId = new SelectList(_context.Blogs, "BlogId", "Url");
             return View();
         }
-
-        // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PostViewModel postVm)
         {
-            if (ModelState.IsValid)
+            try
             {
-                await _mediator.Send(new CreatePostCommand(postVm));
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await _mediator.Send(new CreatePostCommand(postVm));
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(postVm);
             }
-            return View(postVm);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(nameof(postVm.Title), ex.Message);
+                return View(postVm);
+            }
         }
-
-
-        // GET
+        #endregion
+        #region
+        /// <summary>
+        // Edits an existing post.
+        /// </summary>
         public async Task<IActionResult> Edit(int id)
         {
             var post = await _mediator.Send(new GetPostByIdCommand(id));
             if (post == null) return NotFound();
             return View(post);
         }
-
-        // POST 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, PostViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                await _mediator.Send(new UpdatePostCommand(viewModel));
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await _mediator.Send(new UpdatePostCommand(viewModel));
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(viewModel);
             }
-            return View(viewModel);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(nameof(viewModel.Title), ex.Message);
+                return View(viewModel);
+            }
         }
-        
-        //GET
+        #endregion
+        #region
+        /// <summary>
+        // Deletes a post by its ID.
+        /// </summary>
         public async Task<IActionResult> Delete(int id)
         {
             var post = await _mediator.Send(new GetPostByIdCommand(id));
             if (post == null) return NotFound();
             return View(post);
         }
-
-        // POST
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -90,6 +113,6 @@ namespace EFcoreDemo.Controllers
             var post = await _mediator.Send(new GetPostByIdCommand(id));
             return View(post);
         }
-
+        #endregion
     }
 }

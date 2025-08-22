@@ -4,17 +4,22 @@ namespace EFcoreDemo.CQRS.Posts.Command.Update
 {
     public class UpdatePostCommandValidator : AbstractValidator<UpdatePostCommand>
     {
+        #region
+        /// <summary>
+        // Validator for UpdatePostCommand.
+        /// </summary>
         public UpdatePostCommandValidator()
         {
-            RuleFor(x => x.Posts.PostId)
+            RuleFor(x => x.posts.PostId)
                 .GreaterThan(0).WithMessage("PostId must be greater than 0.");
 
-            RuleFor(x => x.Posts.Title)
+            RuleFor(x => x.posts.Title)
                 .NotEmpty().WithMessage("Title is required.")
                 .MaximumLength(256).WithMessage("Title cannot exceed 256 characters.");
 
-            RuleFor(x => x.Posts.Content)
+            RuleFor(x => x.posts.Content)
                 .NotEmpty().WithMessage("Content is required.");
         }
+        #endregion
     }
 }

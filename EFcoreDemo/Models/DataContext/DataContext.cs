@@ -13,6 +13,8 @@ namespace EFcoreDemo.Models.DataContext
         }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Post> posts { get; set; }
+        public DbSet<Employee> employees { get; set; }
+        public DbSet<Department> departments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +27,9 @@ namespace EFcoreDemo.Models.DataContext
 
             // Soft delete filter
             modelBuilder.Entity<Blog>().HasQueryFilter(b => !b.IsDeleted);
+
+            modelBuilder.Entity<Employee>().ToTable("Employees");
+            modelBuilder.Entity<Department>().ToTable("Departments");
         }
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

@@ -4,6 +4,7 @@ namespace EFcoreDemo.CQRS.Common.Interface
 {
     public interface IBlogValidator
     {
-        Task<string> ValidateAsync(CreateBlogCommand request);
+        Task ValidateDuplicateUrlAsync(string url, CancellationToken cancellationToken = default);
+        Task<string> ValidateUpdateUrlAsync(int blogId, string url, CancellationToken cancellationToken = default);
     }
 }

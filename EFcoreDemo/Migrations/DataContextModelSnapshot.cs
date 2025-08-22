@@ -22,7 +22,7 @@ namespace EFcoreDemo.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EFcoreDemo.Models.Blog", b =>
+            modelBuilder.Entity("EFcoreDemo.Models.Domain.Blog", b =>
                 {
                     b.Property<int>("BlogId")
                         .ValueGeneratedOnAdd()
@@ -59,7 +59,56 @@ namespace EFcoreDemo.Migrations
                     b.ToTable("Blogs");
                 });
 
-            modelBuilder.Entity("EFcoreDemo.Models.Post", b =>
+            modelBuilder.Entity("EFcoreDemo.Models.Domain.Department", b =>
+                {
+                    b.Property<int>("DeptId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeptId"));
+
+                    b.Property<string>("DeptName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("DeptId");
+
+                    b.ToTable("Departments", (string)null);
+                });
+
+            modelBuilder.Entity("EFcoreDemo.Models.Domain.Employee", b =>
+                {
+                    b.Property<int>("EmpId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmpId"));
+
+                    b.Property<int?>("DepartmentDeptId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeptId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmpEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmpName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmpSalary")
+                        .HasColumnType("int");
+
+                    b.HasKey("EmpId");
+
+                    b.HasIndex("DepartmentDeptId");
+
+                    b.ToTable("Employees", (string)null);
+                });
+
+            modelBuilder.Entity("EFcoreDemo.Models.Domain.Post", b =>
                 {
                     b.Property<int>("PostId")
                         .ValueGeneratedOnAdd()
@@ -73,31 +122,10 @@ namespace EFcoreDemo.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PostId");
 
@@ -106,9 +134,18 @@ namespace EFcoreDemo.Migrations
                     b.ToTable("posts");
                 });
 
-            modelBuilder.Entity("EFcoreDemo.Models.Post", b =>
+            modelBuilder.Entity("EFcoreDemo.Models.Domain.Employee", b =>
                 {
-                    b.HasOne("EFcoreDemo.Models.Blog", "Blog")
+                    b.HasOne("EFcoreDemo.Models.Domain.Department", "Department")
+                        .WithMany("employees")
+                        .HasForeignKey("DepartmentDeptId");
+
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("EFcoreDemo.Models.Domain.Post", b =>
+                {
+                    b.HasOne("EFcoreDemo.Models.Domain.Blog", "Blog")
                         .WithMany("Posts")
                         .HasForeignKey("BlogId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -117,9 +154,14 @@ namespace EFcoreDemo.Migrations
                     b.Navigation("Blog");
                 });
 
-            modelBuilder.Entity("EFcoreDemo.Models.Blog", b =>
+            modelBuilder.Entity("EFcoreDemo.Models.Domain.Blog", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("EFcoreDemo.Models.Domain.Department", b =>
+                {
+                    b.Navigation("employees");
                 });
 #pragma warning restore 612, 618
         }

@@ -5,6 +5,7 @@ namespace EFcoreDemo.Models.Domain
 {
     public class Post 
     {
+        [Key]   
         public int PostId { get; set; }
         [StringLength(256)]
         [Required]
@@ -14,7 +15,6 @@ namespace EFcoreDemo.Models.Domain
 
         public int BlogId { get; set; }
 
-        //navigation property using m-1
         [ForeignKey("BlogId")]
         public virtual Blog Blog { get; set; } = null!;
     }

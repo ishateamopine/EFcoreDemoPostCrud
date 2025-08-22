@@ -12,13 +12,33 @@ namespace EFcoreDemo.CQRS.Common
         {
             _context = context;
         }
-        public async Task<string> ValidateAsync(CreateBlogCommand request)
+        #region
+        /// <summary>
+        // Validates if a blog URL already exists in the database.
+        /// </summary>
+        public async Task ValidateDuplicateUrlAsync(string url, CancellationToken cancellationToken = default)
         {
-            if (await _context.Blogs.AnyAsync(x => x.Url == request.Url))
+            var exists = await _context.Blogs.AnyAsync(x => x.Url == url, cancellationToken);
+            if(exists)
             {
-                return "Duplicate Url found.";
+                throw new Exception($"Blog with URL '{url}' already exists.");
             }
-            return "Unique Url";
+
         }
+        #endregion
+        #region
+        /// <summary>
+        // Validates if a blog URL already exists in the database for an update operation.
+        /// </summary>
+        public async Task<string> ValidateUpdateUrlAsync(int blogId, string url, CancellationToken cancellationToken = default)
+        {
+            var exists = await _context.Blogs.AnyAsync(x => x.Url == url && x.BlogId != blogId, cancellationToken);
+            if (exists)
+            {
+                return $"Blog with URL '{url}' already exists.";
+            }
+            return null;
+        }
+        #endregion
     }
 }

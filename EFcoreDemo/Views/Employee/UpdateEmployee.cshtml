@@ -1,0 +1,31 @@
+﻿@model EFcoreDemo.Models.Domain.Employee
+@{
+    ViewData["Title"] = "Update Employee";
+}
+<h2>@ViewData["Title"]</h2>
+<a asp-action="Index" class="btn btn-secondary mb-3">Back to Employee List</a>
+<form asp-action="Update" method="post">
+    <input type="hidden" asp-for="EmpId" />
+    <div class="form-group">
+        <label asp-for="EmpName" class="control-label"></label>
+        <input asp-for="EmpName" class="form-control" />
+        <span asp-validation-for="EmpName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="EmpEmail" class="control-label"></label>
+        <input asp-for="EmpEmail" class="form-control" />
+        <span asp-validation-for="EmpEmail" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="EmpSalary" class="control-label"></label>
+        <input asp-for="EmpSalary" class="form-control" />
+        <span asp-validation-for="EmpSalary" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DeptId" class="control-label"></label>
+        <input asp-for="DeptId" class="form-control" />
+        <span asp-validation-for="DeptId" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

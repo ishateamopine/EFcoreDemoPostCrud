@@ -15,11 +15,15 @@ namespace EFcoreDemo.CQRS.Posts.Queries.GetAll
             _repository = repository;
             _mapper = mapper;
         }
-
+        #region
+        /// <summary>
+        // Retrieves all post entries with their details.
+        /// </summary>
         public async Task<IEnumerable<PostViewModel>> Handle(GetAllPostsCommand request, CancellationToken cancellationToken)
         {
             var posts = await _repository.GetAllAsync();
             return _mapper.Map<IEnumerable<PostViewModel>>(posts);
         }
+        #endregion
     }
 }

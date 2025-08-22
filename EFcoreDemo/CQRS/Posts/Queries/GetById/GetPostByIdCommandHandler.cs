@@ -14,10 +14,15 @@ namespace EFcoreDemo.CQRS.Posts.Queries.GetById
             _repository = repository;
             _mapper = mapper;
         }
+        #region
+        /// <summary>
+        // Retrieves a post entry by its ID.
+        /// </summary>
         public async Task<PostViewModel> Handle(GetPostByIdCommand request, CancellationToken cancellationToken)
         {
             var post = await _repository.GetByIdAsync(request.PostId);
             return _mapper.Map<PostViewModel>(post);
         }
+        #endregion
     }
 }

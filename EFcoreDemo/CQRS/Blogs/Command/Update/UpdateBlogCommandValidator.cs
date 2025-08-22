@@ -4,6 +4,10 @@ namespace EFcoreDemo.CQRS.Blogs.Command.Update
 {
     public class UpdateBlogCommandValidator : AbstractValidator<UpdateBlogCommand>
     {
+        #region
+        /// <summary>
+        /// Validator for UpdateBlogCommand.
+        /// </summary>
         public UpdateBlogCommandValidator()
         {
             RuleFor(x => x.BlogId)
@@ -16,5 +20,6 @@ namespace EFcoreDemo.CQRS.Blogs.Command.Update
                 .MaximumLength(200)
                 .WithMessage("Url must not exceed 200 characters.");
         }
+        #endregion
     }
 }
