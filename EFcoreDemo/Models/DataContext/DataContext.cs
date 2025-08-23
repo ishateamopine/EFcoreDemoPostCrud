@@ -31,7 +31,7 @@ namespace EFcoreDemo.Models.DataContext
             modelBuilder.Entity<Employee>().ToTable("Employees");
             modelBuilder.Entity<Department>().ToTable("Departments");
         }
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationtoken = default)
         {
             var entries = ChangeTracker.Entries<AuditBase>();
 
@@ -41,25 +41,25 @@ namespace EFcoreDemo.Models.DataContext
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedAt = DateTime.UtcNow;
-                        entry.Entity.CreatedBy = "System";
+                        entry.Entity.CreatedBy = "system";
                         break;
 
                     case EntityState.Modified:
                         entry.Entity.UpdatedAt = DateTime.UtcNow;
-                        entry.Entity.UpdatedBy = "System";
+                        entry.Entity.UpdatedBy = "system";
                         break;
 
                     case EntityState.Deleted:
-                        // Soft delete instead of hard delete
+                        // soft delete instead of hard delete
                         entry.State = EntityState.Modified;
                         entry.Entity.IsDeleted = true;
                         entry.Entity.DeletedAt = DateTime.UtcNow;
-                        entry.Entity.DeletedBy = "System";
+                        entry.Entity.DeletedBy = "system";
                         break;
                 }
             }
 
-            return await base.SaveChangesAsync(cancellationToken);
+            return await base.SaveChangesAsync(cancellationtoken);
         }
     }
 }

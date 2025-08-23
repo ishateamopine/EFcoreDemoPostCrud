@@ -1,6 +1,8 @@
-﻿namespace EFcoreDemo.CQRS.Employees.Command.Insert
+﻿using EFcoreDemo.Models.Domain;
+using MediatR;
+
+namespace EFcoreDemo.CQRS.Employees.Command.Insert
 {
-    public class InsertEmployeeCommand
-    {
-    }
+    public record InsertEmployeeCommand (Employee employee) : IRequest<int>;
+
 }
