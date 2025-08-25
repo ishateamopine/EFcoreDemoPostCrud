@@ -1,0 +1,16 @@
+﻿@model EFcoreDemo.Models.Domain.Department
+@{
+    ViewData["Title"] = "Create Department";
+}
+
+<h2>@ViewData["Title"]</h2>
+<a asp-action="Index" class="btn btn-secondary mb-3">Back to Department List</a>
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="DeptName" class="control-label"></label>
+        <input asp-for="DeptName" class="form-control" />
+        <span asp-validation-for="DeptName" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

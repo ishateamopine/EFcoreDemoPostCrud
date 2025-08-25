@@ -1,0 +1,17 @@
+﻿@model EFcoreDemo.Models.Domain.Department
+@{
+    ViewData["Title"] = "Department Details";
+}
+
+<h2>@ViewData["Title"]</h2>
+<a asp-action="Index" class="btn btn-secondary mb-3">Back to Department List</a>
+<table class="table table-bordered">
+    <tr>
+        <th>Department ID</th>
+        <td>@Model.DeptId</td>
+    </tr>
+    <tr>
+        <th>Department Name</th>
+        <td>@Model.DeptName</td>
+    </tr>
+</table>

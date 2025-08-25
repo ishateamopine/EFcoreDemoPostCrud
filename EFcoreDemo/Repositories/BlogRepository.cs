@@ -1,7 +1,6 @@
 ﻿using EFcoreDemo.Models.DataContext;
 using EFcoreDemo.Models.Domain;
 using EFcoreDemo.Repositories.Interface;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
@@ -69,7 +68,7 @@ namespace EFcoreDemo.Repositories
             {
                 return await _context.Blogs.Where(b => !b.IsDeleted).AsNoTracking().ToListAsync(cancellationToken);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new List<Blog>();
             }
@@ -81,18 +80,16 @@ namespace EFcoreDemo.Repositories
         /// </summary>
         public async Task<int> ModifyBlogAsync(int blogId, string newUrl)
         {
-            return await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"EXEC dbo.modify_blog {blogId}, {newUrl}"
+            return await _context.Database.ExecuteSqlInterpolatedAsync($"EXEC dbo.modify_blog {blogId}, {newUrl}"
             );
         }
         #endregion
         #region
         /// <summary>
         // Deletes a blog entry from the database by its ID using a stored procedure.
-        public async Task<int> DeleteBlogAsync(int blogId)
+        public async Task<int> DeleteBlogReturnIdAsync(int blogId)
         {
-            return await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"EXEC dbo.delete_blog {blogId}"
+            return await _context.Database.ExecuteSqlInterpolatedAsync( $"EXEC dbo.delete_blog {blogId}"
             );
         }
         #endregion
@@ -102,22 +99,7 @@ namespace EFcoreDemo.Repositories
         /// </summary>
         public async Task<int> InsertBlogReturnIdAsync(string url)
         {
-            using var conn = _context.Database.GetDbConnection();
-            await conn.OpenAsync();
-
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = "dbo.insert_blog";
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            var pUrl = new SqlParameter("@Url", SqlDbType.NVarChar, 4000) { Value = (object)url ?? DBNull.Value };
-            var pOut = new SqlParameter("@NewId", SqlDbType.Int) { Direction = ParameterDirection.Output };
-
-            cmd.Parameters.Add(pUrl);
-            cmd.Parameters.Add(pOut);
-
-            await cmd.ExecuteNonQueryAsync();
-
-            return pOut.Value == DBNull.Value ? 0 : Convert.ToInt32(pOut.Value);
+           return await _context.Database.ExecuteSqlInterpolatedAsync($"EXEC dbo.insert_blog {url}");
         }
         #endregion
     }

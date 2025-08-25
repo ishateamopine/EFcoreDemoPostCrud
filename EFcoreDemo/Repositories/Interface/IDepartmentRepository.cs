@@ -4,7 +4,7 @@ namespace EFcoreDemo.Repositories.Interface
 {
     public interface IDepartmentRepository
     {
-        Task<IEnumerable<Department>> GetAllDepartmentsAsync();
+        Task<IEnumerable<Department>> GetAllDepartmentsAsync(CancellationToken cancellationToken);
         Task<Department?> GetDepartmentByIdAsync(int id);
         Task<int> InsertDepartmentAsync(Department department);
         Task<int> UpdateDepartmentAsync(Department department);

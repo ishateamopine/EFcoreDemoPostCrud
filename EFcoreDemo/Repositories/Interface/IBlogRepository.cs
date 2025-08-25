@@ -13,6 +13,7 @@ namespace EFcoreDemo.Repositories.Interface
         //Store Procedure
         Task<int> InsertBlogReturnIdAsync(string url);
         Task<int> ModifyBlogAsync(int blxogId, string newUrl);
+        Task<int> DeleteBlogReturnIdAsync(int blogId);
 
     }
 
