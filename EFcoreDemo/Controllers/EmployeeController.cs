@@ -1,4 +1,5 @@
-﻿using EFcoreDemo.CQRS.Employees.Command.Insert;
+﻿using EFcoreDemo.CQRS.Employees.Command.Delete;
+using EFcoreDemo.CQRS.Employees.Command.Insert;
 using EFcoreDemo.CQRS.Employees.Command.Update;
 using EFcoreDemo.CQRS.Employees.Query.GetAll;
 using EFcoreDemo.Models.DataContext;
@@ -56,10 +57,36 @@ namespace EFcoreDemo.Controllers
             return View(employee);
         }
         [HttpPost]
-        public async Task<IActionResult> Update(string empName, string EmpEmail, int EmpSalary,CancellationToken cancellationToken)
+        public async Task<IActionResult> Update(Employee employee,CancellationToken cancellationToken)
         {
-            await _mediator.Send(new UpdateEmployeeCommand(empName, EmpEmail, EmpSalary), cancellationToken);
+            await _mediator.Send(new UpdateEmployeeCommand(employee.EmpId,employee.EmpName, employee.EmpEmail, employee.EmpSalary), cancellationToken);
             return RedirectToAction("Index");
+        }
+        #endregion
+        #region
+        /// <summary>
+        // Deletes an employee by ID.
+        /// </summary>
+        public async Task<ActionResult> Delete(int id, CancellationToken cancellationToken)
+        {
+            var Employee = await _employeeRepository.GetEmployeeByIdAsync(id);
+            return View(Employee);
+        }
+        [HttpPost] 
+        public async Task<IActionResult> Delete(Employee employee , CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new DeleteEmployeeCommand(employee.EmpId), cancellationToken);
+            return RedirectToAction("Index");
+        }
+        #endregion
+        #region
+        /// <summary>
+        // Selects an employee by ID.
+        /// </summary>
+        public async Task<IActionResult> Details(int id, CancellationToken cancellationToken)
+        {
+            var emplpoyee = await _employeeRepository.GetEmployeeByIdAsync(id);
+            return View(emplpoyee);
         }
         #endregion
     }

@@ -13,14 +13,16 @@ namespace EFcoreDemo.CQRS.Employees.Command.Update
         }
         public async Task<int> Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
         {
-           var employee = new Employee
-           {
-               EmpName = request.EmpName,
-               EmpEmail = request.EmpEmail,
-               EmpSalary = request.EmpSalary
-           };
-             await _employeeRepository.UpdateEmployeeAsync(employee);
-            return 1; 
+           var employee = await _employeeRepository.GetEmployeeByIdAsync(request.EmpId);
+            if (employee == null)
+            {
+                throw new KeyNotFoundException($"Employee with ID {request.EmpId} not found.");
+            }
+            employee.EmpName = request.EmpName;
+            employee.EmpEmail = request.EmpEmail;
+            employee.EmpSalary = request.EmpSalary;
+            await _employeeRepository.UpdateEmployeeAsync(employee);
+            return employee.EmpId; 
         }
     }
 }

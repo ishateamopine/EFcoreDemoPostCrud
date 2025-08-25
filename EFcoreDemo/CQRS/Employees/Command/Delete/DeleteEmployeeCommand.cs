@@ -1,6 +1,6 @@
-﻿namespace EFcoreDemo.CQRS.Employees.Command.Delete
+﻿using MediatR;
+
+namespace EFcoreDemo.CQRS.Employees.Command.Delete
 {
-    public class DeleteEmployeeCommand
-    {
-    }
+    public record DeleteEmployeeCommand(int EmpId) : IRequest<int>;
 }

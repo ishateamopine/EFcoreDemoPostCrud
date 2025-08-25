@@ -22,6 +22,7 @@ builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<IBlogValidator, BlogValidator>();
 builder.Services.AddScoped<IPostValidator, PostValidator>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<BlogService>();

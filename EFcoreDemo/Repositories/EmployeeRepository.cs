@@ -30,6 +30,11 @@ namespace EFcoreDemo.Repositories
             _context.employees.Update(employee);
             await _context.SaveChangesAsync();
         }
+        public async Task<int> DeleteEmployeeAsync(int id)
+        {
+            _context.employees.Remove(new Employee { EmpId = id });
+            return await _context.SaveChangesAsync();
+        }
         public async Task<Employee?> GetEmployeeByIdAsync(int id)
         {
             return await _context.employees.Include(e => e.Department).FirstOrDefaultAsync(e => e.EmpId == id);
